@@ -2,13 +2,25 @@ function ConvertHandler() {
   
   this.getNum = function(input) {
     let result;
+    if (!input ) 
+      return 1;
+      
+    const doubleFraction = input.match(/\d+\.?\d*([/.]\d+\.?\d*)?\/\d+\.?\d*([/.]\d+\.?\d*)?/);
+    if (doubleFraction.length !== 0) {
+      return new Error("Dobule-Fraction");
+    }
+
+    let matches = input.match(/\d+\.?\d*([/.]\d+\.?\d*)?/)
+    if(matches.length === 0) {
+      return 1;
+    }
     
     return result;
   };
   
   this.getUnit = function(input) {
     let result;
-    
+    result = input.initUnit;
     return result;
   };
   
