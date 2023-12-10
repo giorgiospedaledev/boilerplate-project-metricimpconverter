@@ -41,7 +41,7 @@ function ConvertHandler() {
 
   this.getUnit = function (input) {
     let result;
-    const unit = input.match(/[a-Z]+/);
+    const unit = input.match(/[A-Za-z]+/);
     if (!unit) {
       return new Error("Invalid input unit");
     }
