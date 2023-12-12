@@ -1,55 +1,138 @@
 function ConvertHandler() {
   const units = ["gal", "L", "mi", "km", "lbs", "kg"];
-  const spelledOutUnits = ["gallons", "liters", "miles", "kilometers", "pounds", "kilograms"]
+  const spelledOutUnits = [
+    "gallons",
+    "liters",
+    "miles",
+    "kilometers",
+    "pounds",
+    "kilograms",
+  ];
+
+  
 
   this.getNum = function (input) {
-    //check if the string is not empty
-    if (!input) return 1;
 
-    //check if there is a double fraction
-    const doubleFraction = input.match(/\d+\.?\d*\/\d+\.?\d*\/\d+\.?\d*/);
+    if (!input) 
+      return 1;
+
+    if (!/\d/.test(input)) 
+      return 1;
+    // Check if there is a double fraction
+    let doubleFraction = input.match(/\d+(\.?\d*)?\/+\d+\.?\d*\/\d+\.?\d*/);
     if (doubleFraction) {
-      return new Error("Dobule-Fraction");
+      console.log(input)
+      return new Error("Invalid number: double fraction");
     }
 
-    //check if there is a number
+    doubleFraction = input.match(/\d*\.?\d*\/\/\d*\.?\d*/);
+    if (doubleFraction) {
+      return new Error("Invalid number: double fraction");
+    }
 
-    let matches = input.match(/\d+\.?\d*([/.]\d+\.?\d*)?/);
+    // Check if there is a number
+    const matches = input.match(/\d+\.?\d*([/.]\d+\.?\d*)?/);
     if (!matches) {
-      return 1;
+      // If there's no valid number, check if the input contains only a unit
+      const unitOnly = input.match(/[a-zA-Z]+/);
+      if (unitOnly && !input.match(/\d/)) {
+        return "1";
+      } else {
+        return new Error("Invalid number");
+      }
     }
 
     let result;
-    let numerator;
-    let denominator;
-
-    //separate the fraction
     const parts = matches[0].split("/");
-    //if the string isnt a fraction
+
     if (parts.length === 1) {
-      //parse the numerator
+      // Parse the numerator
       result = parseFloat(parts[0]);
     } else {
-      //otherwise parse the num and den then create the float number
-      numerator = parseFloat(parts[0]);
-      denominator = parseFloat(parts[1]);
-      result = numerator / denominator;
+      // Parse the num and den then create the float number
+      const numerator = parseFloat(parts[0]);
+      const denominator = parseFloat(parts[1]);
+
+      if (denominator === 0) {
+        return new Error("Invalid number: division by zero");
+      }
+
+      result = Number.parseFloat(numerator) / Number.parseFloat(denominator);
     }
 
     return result;
   };
 
+  // this.getNum = function (input) {
+  //   // Check if the string is not empty
+  //   if (!input) {
+  //     return 1;
+  //   }
+
+  //   // Check if there is a double fraction
+  //   let doubleFraction = input.match(/\d+(\.?\d*)?\/+\d+\.?\d*\/?\d+\.?\d*/);
+  //   if (doubleFraction) {
+  //     return new Error("Invalid number: double fraction");
+  //   }
+
+  //   doubleFraction = input.match(/\d*\.?\d*\/\/\d*\.?\d*/);
+  //   if (doubleFraction) {
+  //     return new Error("Invalid number: double fraction");
+  //   }
+
+  //   // Check if there is a number
+  //   const matches = input.match(/\d+\.?\d*([/.]\d+\.?\d*)?/);
+  //   if (!matches) {
+  //     // If there's no valid number, check if the input contains only a unit
+  //     const unitOnly = input.match(/[a-zA-Z]+/);
+  //     if (unitOnly && !input.match(/\d/)) {
+  //       return 1;
+  //     } else {
+  //       return new Error("Invalid number");
+  //     }
+
+  //   }
+
+  //   let result;
+  //   const parts = matches[0].split("/");
+
+  //   if (parts.length === 1) {
+  //     // Parse the numerator
+  //     result = parseFloat(parts[0]);
+  //   } else {
+  //     // Parse the num and den then create the float number
+  //     const numerator = parseFloat(parts[0]);
+  //     const denominator = parseFloat(parts[1]);
+
+  //     if (denominator === 0) {
+  //       return new Error("Invalid number: division by zero");
+  //     }
+
+  //     result = numerator / denominator;
+  //   }
+
+  //   return result.toFixed(5);
+  // };
+
   this.getUnit = function (input) {
     let result;
-    const unit = input.match(/[A-Za-z]+/);
-    if (!unit) {
-      return new Error("Invalid input unit");
+    if (!input) {
+      return new Error("Invalid unit");
     }
 
-    if (!units.some((value) => value.toLowerCase() == unit.toLowerCase()))
-      return new Error("Invalid input unit");
+    const unit = input.match(/[A-Za-z]+/);
+    if (!unit) {
+      return new Error("Invalid unit");
+    }
 
-    return result;
+    if (!units.some((value) => value.toLowerCase() == unit[0].toLowerCase()))
+      return new Error("Invalid unit");
+
+    if (unit[0].toLowerCase() == "l") {
+      return unit[0].toUpperCase();
+    }
+    result = unit[0];
+    return result.toLowerCase();
   };
 
   this.getReturnUnit = function (initUnit) {
@@ -66,11 +149,11 @@ function ConvertHandler() {
       i++;
     }
 
-    return result;
+    return result.toLowerCase();
   };
 
   this.spellOutUnit = function (unit) {
-    return spelledOutUnits[units.indexOf(unit.toLowerCase())]
+    return spelledOutUnits[units.indexOf(unit)];
   };
 
   this.convert = function (initNum, initUnit) {
@@ -99,11 +182,11 @@ function ConvertHandler() {
         break;
     }
 
-    return result;
+    return Number.parseFloat(result.toFixed(5));
   };
 
   this.getString = function (initNum, initUnit, returnNum, returnUnit) {
-    return `${initNum} ${spellOutUnit(initUnit)} converts to ${returnNum} ${spellOutUnit(returnUnit)}`;
+    return `${initNum} ${this.spellOutUnit(initUnit)} converts to ${returnNum.toFixed(5)} ${this.spellOutUnit(returnUnit)}`;
   };
 }
 
